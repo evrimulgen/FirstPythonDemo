@@ -3,7 +3,6 @@
 
 # 导入SQLite驱动:
 import sqlite3
-import time
 import traceback
 
 from VipType import *
@@ -48,7 +47,6 @@ class DbUtil:
 		conn = self.open_conn()
 		cursor = self.open_cursor(conn)
 		cursor.execute("select * from user  where name = ? ",(name,))
-		time.sleep(5)
 		results = cursor.fetchone()
 		self.close_db(conn,cursor)
 		return results
