@@ -72,7 +72,7 @@ def get_user_info(name,unique_mark,is_count_search_times):
 				if db_unique_mark == '':
 					db.update_unique_mark(name,unique_mark)
 				elif unique_mark == db_unique_mark:
-					if vip_type != VipType.forever:
+					if vip_type != VipType.forever.value:
 						if date_util.isVipValid(register_time,vip_type):
 							if use_times <= 0:
 								result_msg = get_err_msg(4)
