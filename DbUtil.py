@@ -6,9 +6,8 @@ import sqlite3
 import traceback
 
 from VipType import *
-from enum import Enum
-# from datetime import *
-from UserUtil import *
+from datetime import *
+import UserUtil
 
 
 class DbUtil:
@@ -25,12 +24,14 @@ class DbUtil:
 		# 执行一条SQL语句，创建user表:
 		cursor.execute('create table IF NOT EXISTS user (\
 						name varchar(200) NOT NULL, \
+						phone_num varchar(200) NOT NULL, \
+						md5 varchar(200) NOT NULL, \
 						unique_mark varchar(200),\
 						register_time varchar(200),\
 						balance_times INT,\
 						vip_type INT,\
 						status bool,\
-						PRIMARY KEY (name)) ')
+						PRIMARY KEY (md5)) ')
 		return cursor
 	
 	def close_db(self,conn,cursor):
@@ -43,54 +44,91 @@ class DbUtil:
 		# 关闭Connection:
 		conn.close()	
 	
-	def select_user_info(self,name):
+	def select_user_info(self,md5):
 		conn = self.open_conn()
 		cursor = self.open_cursor(conn)
-		cursor.execute("select * from user  where name = ? ",(name,))
+		cursor.execute("select * from user where md5 = ? ",(md5,))
 		results = cursor.fetchone()
 		self.close_db(conn,cursor)
 		return results
 		
-	def update_unique_mark(self,name,unique_mark):
+	# 当用户绑定设备时，设置激活时间
+	def update_unique_mark(self,md5,unique_mark):
 		conn = self.open_conn()
 		cursor = self.open_cursor(conn)
-		cursor.execute("UPDATE user SET unique_mark = ? WHERE name = ?",(unique_mark,name))
+		cursor.execute("UPDATE user SET unique_mark = ?,register_time = ? WHERE md5 = ?",(unique_mark,datetime.now(),md5))
 		self.close_db(conn,cursor)
 	
-	def update_use_times(self,name,use_times):
+	# 使用分裂标题接口时，使用次数－1
+	def update_use_times(self,md5,use_times):
+		conn = self.open_conn()
+		cursor = self.open_cursor(conn)
+		cursor.execute("UPDATE user SET balance_times = ? WHERE md5 = ?",(use_times,md5))
+		self.close_db(conn,cursor)
+
+	# 新增用户
+	def insert(self,name,phone_num,vip_type_str):
+		vip_type = int(vip_type_str)
+		rows = 0
+		use_times = UserUtil.get_use_times_by_value(vip_type)
+		md5 = UserUtil.get_md5(name,phone_num)
+		if md5 == '':
+			return rows
 		try:
 			conn = self.open_conn()
 			cursor = self.open_cursor(conn)
-			cursor.execute("UPDATE user SET balance_times = ? WHERE name = ?",(use_times,name))
-			print(use_times)
+			# 继续执行一条SQL语句，插入一条记录:
+			cursor.execute("insert into user \
+				(name,phone_num,md5,unique_mark,register_time,balance_times,vip_type,status)\
+				values (?,?,?,?,?,?,?,?)",\
+				(name,phone_num,md5,'','',use_times,vip_type,True))
+			rows = conn.total_changes
 			self.close_db(conn,cursor)
+		except sqlite3.IntegrityError as e:
+			print(e)
+			pass
 		except sqlite3.Error as e:
-			print(str(e))
-			print ('traceback.print_exc():',traceback.print_exc())
+			print(e)
+			pass
+		finally:
+			pass
+		return rows
 
-	# def insert(self,name,unique_mark,vip_type):
-	# 	use_times = get_use_times(vip_type)
-	# 	print(use_times)
+	def get_all(self):
+		conn = self.open_conn()
+		cursor = self.open_cursor(conn)
+		cursor.execute('select * from user')
+		results = cursor.fetchall()
+		self.close_db(conn,cursor)
+		return results[::-1]
+
+	# def get_last_one(self):
 	# 	conn = self.open_conn()
 	# 	cursor = self.open_cursor(conn)
-	# 	# 继续执行一条SQL语句，插入一条记录:
-	# 	cursor.execute("insert into user (name, unique_mark,register_time,balance_times,vip_type,status) values (?,?,?,?,?,?)",(name,unique_mark,datetime.now(),use_times,vip_type.value,True))
-	# 	self.close_db(conn,cursor)
+
+	# 	cursor.execute('select rowid from user')
+	# 	print(cursor.fetchone())
+	# 	cursor.execute('select last_insert_rowid()')
+	# 	print(cursor.fetchone())
+	# 	print(cursor.lastrowid)
+	# 	self.close_db(conn,cursor)	
+
+	def get_count(self,list_all):
+		return len(list_all)
 
 # if __name__ == "__main__":
 # 	db = DbUtil()	
-# 	db.insert("龚文1",'dd',VipType.month)
-# 	db.insert("龚文3",'dd',VipType.quarter)
-# 	db.insert("龚文4",'dd',VipType.half_year)
-# 	db.insert("龚文5",'dd',VipType.year)
+# 	db.get_last_one()
+# 	# db.insert("龚文1",'15010652066',VipType.forever)
+# 	# db.insert("龚文2",'15010652066',VipType.month)
+# 	# db.insert("龚文3",'15010652066',VipType.quarter)
+# 	# db.insert("龚文4",'15010652066',VipType.half_year)
+	
+# 	print(str(db.insert("龚二111文",'18201077391',VipType.year)))
+
 	
 	########################################################################################################################
-	# def get_all():
-	# 	cursor.execute('select * from user')
-	# 	return cursor.fetchall()
 	
-	# def get_count(list_all):
-	# 	return len(list_all)
 	
 	
 	

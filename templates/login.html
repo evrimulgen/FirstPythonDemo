@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <title>超级管理员登录</title>
+    <script type="text/javascript">
+      function submit(callback){
+        document.getElementById("form_admin_login").submit();
+        callback();
+      }
+
+    function reset(){
+        $('#form_admin_login').reset();
+    }
+
+    function login(){
+        submit(reset);
+    }
+    </script>
+  </head>
+  <body style="margin:20px;">
+    <form id="form_admin_login" method="post" action="{{ url_for('adminLogin') }}">
+         <div style="margin-top:20px;">
+          <span>用户名:&nbsp;&nbsp;&nbsp;</span> 
+          <input style="width:250px;height:30px;" type="text"
+                 name="username" value="{{username}}" placeholder="请输入用户名">
+          <br/>
+         </div>
+         <div style="margin-top:20px;">
+          <span>密&nbsp;&nbsp;&nbsp;码:&nbsp;&nbsp;&nbsp;</span> 
+          <input style="width:250px;height:30px;" type="text"
+                 name="password" value="{{password}}" placeholder="请输入密码">
+          <br/>
+         </div>
+         <button style="margin-top:20px;"type="submit" onclick="login()">登录</button>
+         <br/><br/><br/>
+
+          <span>{{error}}</span> 
+    </form>
+  </body>
+</html>

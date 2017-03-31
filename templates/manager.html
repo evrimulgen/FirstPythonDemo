@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <style type="text/css">
+      thead{background-color: #eee;}
+    </style>
+    <title>超级管理员管理</title>
+      <script type="text/javascript" src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+
+      <script type="text/javascript">
+
+        function submit(callback){
+          document.getElementById("form_admin_manager").submit();
+          callback();
+        }
+
+        function reset(){
+            $('#form_admin_manager').reset();
+        }
+    
+        function login(){
+            submit(reset);
+        }
+
+        $(document).ready(function(){
+          //编辑用户信息
+          $("td").click(function(){
+            var col = $(this).parent().children().index($(this));
+            var row = $(this).parent().parent().children().index($(this).parent());
+            if (col >4){
+              var isContentEditable = (this).contentEditable;
+              if (isContentEditable=='false'){
+                (this).contentEditable = true;
+                (this).style.backgroundColor= "red";
+              }else{
+                (this).contentEditable = false;
+                (this).style.backgroundColor= "white";
+              }
+            }
+          });
+          // 添加用户
+          $("button").click(function(){
+              var user_name = $.trim(document.getElementById('user_name').value);
+              var phone_number = $.trim(document.getElementById('phone_number').value);
+              var vip_type =  $.trim($("#vip_type  option:selected").val());
+
+              if(user_name == ''){
+                alert('用户名不能为空');
+                return;
+              }
+              if(phone_number == ''){
+                alert('手机号不能为空');
+                return;
+              }
+              var JSONstring={
+                "user_name":user_name,
+                "phone_number":phone_number,
+                "vip_type":vip_type
+              }
+            
+              $.ajax({
+                type: 'POST',
+                url: '{{ url_for('adminAdd') }}',
+                data: JSON.stringify(JSONstring),
+                contentType: 'application/json;charset=UTF-8',
+                dataType: 'json', // 注意：这里是指希望服务端返回json格式的数据
+                success: function(response) {
+                  if(response["status"] == true){
+                    // http://www.jquery123.com/prepend/
+                    var row = '<tr>'+
+                          '<td>'+response['list'][0]+'</td>'+
+                          '<td>'+response['list'][1]+'</td>'+
+                          '<td>'+response['list'][2]+'</td>'+
+                          '<td>'+response['list'][3]+'</td>'+
+                          '<td>'+response['list'][4]+'</td>'+
+                          '<td>'+response['list'][5]+'</td>'+
+                          '<td>'+response['list'][6]+'</td>'+
+                          '<td>'+response['list'][7]+'</td>'+
+                          '<td>修改</td>'+
+                          '</tr>';   
+                    $("table tbody").prepend(row);
+
+                    alert("成功添加新用户")
+                  }else{
+                    alert("添加新用户失败")
+                  }
+                    console.log(response);
+                },
+                error: function(error) {
+                    console.log(error);
+                }
+              });
+          });
+        });
+    </script>
+  </head>
+  <body style="margin:20px;">
+      <div class="inner">Hello</div>
+
+    <div>
+      <!-- <form action={{ url_for('adminAdd') }} method="post" role="form"> -->
+        <div style="margin-top:20px;margin-bottom:20px;"><button type="submit">添加用户</button></div>
+        <div style="margin-top:20px;">
+          <span>用户名:&nbsp;&nbsp;&nbsp;</span> 
+          <input style="width:250px;height:30px;" type="text"
+               id="user_name" name="user_name" placeholder="请输入用户名">
+          <br/>
+        </div>
+        <div style="margin-top:20px;">
+          <span>手机号&nbsp;&nbsp;&nbsp;</span> 
+          <input style="width:250px;height:30px;" type="text"
+               id="phone_number" name="phone_number"placeholder="请输入手机号">
+          <br/>
+        </div>
+        <div style="margin-top:20px;">
+          <span>Vip类型&nbsp;&nbsp;</span> 
+          <select id="vip_type">
+            <option value="0">月费会员</option>
+            <option value="1">季度会员</option>
+            <option value="2">半年会员</option>
+            <option value="3">年费会员</option>
+            <option value="4">永久会员</option>
+          </select>
+        </div>
+      <!-- </form> -->
+    </div>
+
+    <p style = "margin-top:20px;margin-bottom:20px;"> 用户列表</p>
+    <!-- id="user_list" -->
+    <div style="height:400px;overflow:auto;">
+        <table border="1">
+          <thead>
+            <tr>
+              <th>用户名</th>
+              <th>手机号</th>
+              <th>帐号</th>
+              <th>绑定的设备</th>
+              <th>注册时间</th>
+              <th>剩余次数</th>
+              <th>Vip类型</th>
+              <th>Status(暂时用不到)</th>
+              <th>编辑</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for user_info in user_infos %}
+              <tr>
+                {% for item in user_info %}
+                  <td contenteditable = false>{{ item }}</td>
+                {% endfor %} 
+                  <td contenteditable = false>修改</td>
+              </tr>
+            {% endfor %} 
+          </tbody> 
+        </table>
+    </div>
+  </body>
+</html>
