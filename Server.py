@@ -51,8 +51,10 @@ def search():
 	result['list'] = results
 	return json.dumps(result)
 
+######################## 管理员后台服务模块 ########################
+
 # 超级管理员
-@app.route('/adminlogin', methods=['POST','GET'])
+@app.route('/adminlogin1', methods=['POST','GET'])
 def adminLogin():
 	error = ''
 	username = ''
@@ -74,7 +76,7 @@ def adminLogin():
 						item.append(value)
 				user_infos.append(item)
 			resp = make_response(render_template('manager.html',user_infos=user_infos))
-			resp.set_cookie('username',username)
+			# resp.set_cookie('username',username)
 			return resp
 			# return redirect(url_for('adminManager',username=username,password=password))
 		# return render_template('manager.html',results = results,brand_key_word = brand_key,title_key_word = title_key,divide_num = divide_num,brand_name_list = brand_list,brand_name_list_exp=brand_name_list_exp)
@@ -112,3 +114,7 @@ if __name__ == '__main__':
 	app.debug = True
 	app.run(host='0.0.0.0') 
 
+
+# 待优化：
+# 获取最后一条记录
+# 编辑
