@@ -54,7 +54,7 @@ def search():
 ######################## 管理员后台服务模块 ########################
 
 # 超级管理员
-@app.route('/adminlogin1', methods=['POST','GET'])
+@app.route('/adminlogin', methods=['POST','GET'])
 def adminLogin():
 	error = ''
 	username = ''
