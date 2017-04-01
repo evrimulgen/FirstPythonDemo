@@ -65,16 +65,7 @@ def adminLogin():
 		if username != 'admin' or password != '111111':
 			error= "用户名或密码错误"
 		else:
-			user_infos_temp = get_all_user_info()
-			user_infos = list()
-			for user_info_temp in user_infos_temp:
-				item = list()
-				for index,value in enumerate(user_info_temp):
-					if index == 6:
-						item.append(get_vip_type_desc_by_value(value))
-					else:
-						item.append(value)
-				user_infos.append(item)
+			user_infos = get_all_user_info()
 			resp = make_response(render_template('manager.html',user_infos=user_infos))
 			# resp.set_cookie('username',username)
 			return resp
@@ -90,20 +81,9 @@ def adminAdd():
 	rows = add_new_user(result["user_name"],result["phone_number"],result["vip_type"])	
 	if rows == 1:
 		# 待优化 取最后一条数据
-		user_infos_temp = get_all_user_info()
-		user_infos = list()
-		for user_info_temp in user_infos_temp:
-			item = list()
-			for index,value in enumerate(user_info_temp):
-				if index == 6:
-					item.append(get_vip_type_desc_by_value(value))
-				else:
-					item.append(value)
-			user_infos.append(item)
+		user_infos = get_all_user_info()
 		result = get_ok_msg()
 		result['list'] = user_infos[0:1][0]
-		# resp = make_response(render_template('manager.html',user_infos=user_infos))
-		# return resp
 		return json.dumps(result)
 	else:
 		return json.dumps(get_err_msg(6))

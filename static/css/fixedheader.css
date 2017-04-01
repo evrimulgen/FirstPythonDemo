@@ -37,9 +37,9 @@ th,td{
   padding:5px 0;
 }
 
-tbody tr:nth-child(even){
+/*tbody tr:nth-child(even){
   background:#ECF0F1;
-}
+}*/
 
 tbody tr:hover{
   background:#BDC3C7;
