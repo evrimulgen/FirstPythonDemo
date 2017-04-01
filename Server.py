@@ -81,13 +81,33 @@ def adminAdd():
 	rows = add_new_user(result["user_name"],result["phone_number"],result["vip_type"])	
 	if rows == 1:
 		# 待优化 取最后一条数据
-		user_infos = get_all_user_info()
 		result = get_ok_msg()
-		result['list'] = user_infos[0:1][0]
+		result['list'] = get_last_user_info()
 		return json.dumps(result)
 	else:
 		return json.dumps(get_err_msg(6))
 
+# 修改用户信息
+@app.route('/admin_update', methods=['POST'])
+def adminUpdate():
+	result = request.get_json()
+	rows = update_one_user(result["unique_id"],result["blance_times"],result["vip_type"])	
+	if rows == 1:
+		result = get_ok_msg()
+		return json.dumps(result)
+	else:
+		return json.dumps(get_err_msg(6))
+
+# 删除用户
+@app.route('/admin_delete', methods=['POST'])
+def adminDelete():
+	result = request.get_json()
+	rows = delete_one_user(result["unique_id"])	
+	if rows == 1:
+		result = get_ok_msg()
+		return json.dumps(result)
+	else:
+		return json.dumps(get_err_msg(6))
 
 
 if __name__ == '__main__':

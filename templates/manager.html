@@ -17,7 +17,7 @@
             for(var j = 0; j < user_info_len; j++){
               var value = user_info[j];
               var select = '<select>';
-              if (j === 6){
+              if (j == 6){
                 var is_selcted =''; 
                 for(var k = 0; k < 5; k++){
                   if (value == k ){
@@ -34,6 +34,9 @@
                             select +
                          '</td>';
                 tr = tr + td;
+              }else if(j == 8){
+                var td = '<td>'+user_info[j]+'</td>';
+                tr = tr + td;
               }else{
                 var td = '<td>'+user_info[j]+'</td>';
                 tr = tr + td;
@@ -47,6 +50,7 @@
               $("table tbody").append(tr);
             }
         }
+
         function load_all_user_info(user_infos){
           var user_infos_len = user_infos.length;
           for(var i = 0; i < user_infos_len; i++){
@@ -72,18 +76,85 @@
           load_all_user_info(user_infos)
 
           //编辑用户信息
-          $("td").click(function(){
+          $("tbody").on('click','td',function(event){
+
             var col = $(this).parent().children().index($(this));
             var row = $(this).parent().parent().children().index($(this).parent());
-            if (col >4){
+            if (col == 5){
               var isContentEditable = (this).contentEditable;
-              if (isContentEditable=='false'){
-                (this).contentEditable = true;
-                (this).style.backgroundColor= "red";
-              }else{
+              console.log(isContentEditable)
+              if (isContentEditable=='true'){
                 (this).contentEditable = false;
                 (this).style.backgroundColor= "white";
+                (this).style.color= "black";
+              }else{
+                (this).contentEditable = true;
+                (this).style.backgroundColor= "red";
+                (this).style.color= "black";
               }
+            }else if(col == 8){
+              var balanceTimes_newValue = $(this).parent().children().eq(5).text().trim();
+              var vipType_newValue = $(this).parent().children().eq(6).children().val().trim();
+
+              var rule = /^\d+$/;//正整数正则表达式
+              if(rule.test(balanceTimes_newValue) == false){
+                alert("请输入整数");
+                return;
+              }
+
+              var balanceTimes_oldValue = user_infos[row][5];
+              var vipType_oldValue = user_infos[row][6];
+              if(balanceTimes_oldValue == balanceTimes_newValue && vipType_oldValue == vipType_newValue){
+                alert("更新数据成功");
+                return;
+              }
+              var JSONstring={
+                "unique_id":user_infos[row][2],
+                "blance_times":parseInt(balanceTimes_newValue),
+                "vip_type":parseInt(vipType_newValue)
+              }
+              $.ajax({
+                type: 'POST',
+                url: '{{ url_for('adminUpdate') }}',
+                data: JSON.stringify(JSONstring),
+                contentType: 'application/json;charset=UTF-8',
+                dataType: 'json', // 注意：这里是指希望服务端返回json格式的数据
+                success: function(response) {
+                  if(response["status"] == true){
+                    alert("更新数据成功")
+                  }else{
+                    alert("更新数据失败")
+                  }
+                    console.log(response);
+                },
+                error: function(error) {
+                    console.log(error);
+                }
+              });
+            }else if(col == 9){
+              var JSONstring={
+                "unique_id":user_infos[row][2]
+              }
+              var that = $(this); 
+              $.ajax({
+                type: 'POST',
+                url: '{{ url_for('adminDelete') }}',
+                data: JSON.stringify(JSONstring),
+                contentType: 'application/json;charset=UTF-8',
+                dataType: 'json', // 注意：这里是指希望服务端返回json格式的数据
+                success: function(response) {
+                  if(response["status"] == true){
+                    that.parent().remove();
+                    alert("成功删除用户");
+                  }else{
+                    alert("删除用户失败");
+                  }
+                    console.log(response);
+                },
+                error: function(error) {
+                    console.log(error);
+                }
+              });
             }
           });
           // 添加用户

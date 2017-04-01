@@ -116,8 +116,19 @@ def check_user_info(name,unique_mark,is_count_search_times):
 def get_all_user_info():
 	return db.get_all()
 
+def get_last_user_info():
+	return db.get_last_one()
+
 def add_new_user(name,phone_num,vip_type):
 	rows = db.insert(name,phone_num,vip_type)
+	return rows
+
+def delete_one_user(md5):
+	rows = db.delete_one_user(md5)
+	return rows
+
+def update_one_user(md5,use_times,vip_type):
+	rows = db.update_one_user(md5,use_times,vip_type)
 	return rows
 
 def get_md5(name,phone_num):
