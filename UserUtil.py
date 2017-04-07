@@ -77,9 +77,9 @@ def get_err_msg(code):
 	return result_err
 
 # 校验用户信息
-def check_user_info(name,unique_mark,is_count_search_times):
+def check_user_info(account,unique_mark,is_count_search_times):
 	result_msg = get_ok_msg()
-	if name is None or name == '':
+	if account is None or account == '':
 		result_msg = get_err_msg(0)
 	elif unique_mark is None or unique_mark == '':
 		result_msg = get_err_msg(1)
@@ -87,10 +87,10 @@ def check_user_info(name,unique_mark,is_count_search_times):
 		try:
 			results = db.select_user_info(name)
 			if results != None:
-				db_unique_mark = results[3] 
-				register_time = results[4]
-				use_times = results[5]
-				vip_type = results[6]
+				db_unique_mark = results[1] 
+				register_time = results[2]
+				use_times = results[3]
+				vip_type = results[4]
 				if db_unique_mark is None or db_unique_mark == '':
 					db.update_unique_mark(name,unique_mark)
 				elif unique_mark == db_unique_mark:
@@ -119,25 +119,25 @@ def get_all_user_info():
 def get_last_user_info():
 	return db.get_last_one()
 
-def add_new_user(name,phone_num,vip_type):
-	rows = db.insert(name,phone_num,vip_type)
+def add_new_user(account,vip_type):
+	rows = db.insert(account,vip_type)
 	return rows
 
-def delete_one_user(md5):
-	rows = db.delete_one_user(md5)
+def delete_one_user(account):
+	rows = db.delete_one_user(account)
 	return rows
 
-def update_one_user(md5,use_times,vip_type):
-	rows = db.update_one_user(md5,use_times,vip_type)
+def update_one_user(account,use_times,vip_type):
+	rows = db.update_one_user(account,use_times,vip_type)
 	return rows
 
-def get_md5(name,phone_num):
-	if isinstance(name,str) and isinstance(phone_num,str) and name != '' and phone_num != '':
-		result = name + phone_num
-		result_encode = result.encode('utf-8')
-		# print(result,result_encode)
-		m = hashlib.md5()
-		m.update(result_encode)
-		return m.hexdigest()
-	else:
-		return ''
+# def get_md5(name,phone_num):
+# 	if isinstance(name,str) and isinstance(phone_num,str) and name != '' and phone_num != '':
+# 		result = name + phone_num
+# 		result_encode = result.encode('utf-8')
+# 		# print(result,result_encode)
+# 		m = hashlib.md5()
+# 		m.update(result_encode)
+# 		return m.hexdigest()
+# 	else:
+# 		return ''

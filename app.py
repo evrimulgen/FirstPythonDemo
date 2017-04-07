@@ -78,7 +78,8 @@ def adminLogin():
 @app.route('/admin_add', methods=['POST'])
 def adminAdd():
 	result = request.get_json()
-	rows = add_new_user(result["user_name"],result["phone_number"],result["vip_type"])	
+	rows = add_new_user(result["account"],result["vip_type"])
+	print(rows)	
 	if rows == 1:
 		# 待优化 取最后一条数据
 		result = get_ok_msg()
@@ -91,7 +92,7 @@ def adminAdd():
 @app.route('/admin_update', methods=['POST'])
 def adminUpdate():
 	result = request.get_json()
-	rows = update_one_user(result["unique_id"],result["blance_times"],result["vip_type"])	
+	rows = update_one_user(result["account"],result["blance_times"],result["vip_type"])	
 	if rows == 1:
 		result = get_ok_msg()
 		return json.dumps(result)
@@ -102,7 +103,7 @@ def adminUpdate():
 @app.route('/admin_delete', methods=['POST'])
 def adminDelete():
 	result = request.get_json()
-	rows = delete_one_user(result["unique_id"])	
+	rows = delete_one_user(result["account"])	
 	if rows == 1:
 		result = get_ok_msg()
 		return json.dumps(result)
@@ -113,8 +114,4 @@ def adminDelete():
 if __name__ == '__main__':
 	app.debug = True
 	app.run(host='0.0.0.0') 
-
-
-# 待优化：
-# 获取最后一条记录
-# 编辑
+	
