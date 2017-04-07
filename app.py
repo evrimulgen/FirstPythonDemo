@@ -79,7 +79,6 @@ def adminLogin():
 def adminAdd():
 	result = request.get_json()
 	rows = add_new_user(result["account"],result["vip_type"])
-	print(rows)	
 	if rows == 1:
 		# 待优化 取最后一条数据
 		result = get_ok_msg()

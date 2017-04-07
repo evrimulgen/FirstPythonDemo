@@ -96,8 +96,8 @@
                 (this).style.color= "black";
               }
             }else if(col == modify_index){
-              var balanceTimes_newValue = $(this).parent().children().eq(3).text().trim();
-              var vipType_newValue = $(this).parent().children().eq(4).children().val().trim();
+              var balanceTimes_newValue = $(this).parent().children().eq(balance_times_column_index).text().trim();
+              var vipType_newValue = $(this).parent().children().eq(vip_type_index).children().val().trim();
 
               var rule = /^\d+$/;//正整数正则表达式
               if(rule.test(balanceTimes_newValue) == false){
