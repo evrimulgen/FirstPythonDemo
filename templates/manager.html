@@ -104,9 +104,10 @@
                 alert("请输入整数");
                 return;
               }
-
-              var balanceTimes_oldValue = user_infos[row][balance_times_column_index];
-              var vipType_oldValue = user_infos[row][vip_type_index];
+              var row_data = new Array();
+              row_data = user_infos[row];
+              var balanceTimes_oldValue = row_data[balance_times_column_index];
+              var vipType_oldValue = row_data[vip_type_index];
               if(balanceTimes_oldValue == balanceTimes_newValue && vipType_oldValue == vipType_newValue){
                 alert("更新数据成功");
                 return;

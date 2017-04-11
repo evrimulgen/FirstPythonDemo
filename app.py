@@ -46,6 +46,8 @@ def search():
 	result = check_user_info(username,password,True)
 	if result['status'] == False:
 		return json.dumps(result)
+	if key_word is None or key_word == '':
+		return json.dumps(())
 	brand_list = SearchLogic.get_brand_list(key_word)
 	results = SearchLogic.get_processed_title(brand_list,SearchLogic.get_title_list_by_total_page(key_word,number))
 	result['list'] = results

@@ -85,14 +85,14 @@ def check_user_info(account,unique_mark,is_count_search_times):
 		result_msg = get_err_msg(1)
 	else:
 		try:
-			results = db.select_user_info(name)
+			results = db.select_user_info(account)
 			if results != None:
 				db_unique_mark = results[1] 
 				register_time = results[2]
 				use_times = results[3]
 				vip_type = results[4]
 				if db_unique_mark is None or db_unique_mark == '':
-					db.update_unique_mark(name,unique_mark)
+					db.update_unique_mark(account,unique_mark)
 				elif unique_mark == db_unique_mark:
 					if vip_type != VipType.forever.value:
 						if date_util.isVipValid(register_time,vip_type):
@@ -100,7 +100,7 @@ def check_user_info(account,unique_mark,is_count_search_times):
 								result_msg = get_err_msg(4)
 							elif is_count_search_times:
 								use_times = use_times - 1
-								db.update_use_times(name,use_times)
+								db.update_use_times(account,use_times)
 						else:
 							result_msg = get_err_msg(5)
 				else:
