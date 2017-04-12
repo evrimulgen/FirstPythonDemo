@@ -91,8 +91,17 @@ def check_user_info(account,unique_mark,is_count_search_times):
 				register_time = results[2]
 				use_times = results[3]
 				vip_type = results[4]
+
+				if register_time is not None and register_time != '':
+					result_msg['dateline'] = date_util.getDateline(register_time,vip_type)
+				if vip_type == VipType.forever.value:
+					result_msg['balance_times'] = '无限次'
+				else:
+					result_msg['balance_times'] = use_times
+				result_msg['vip_type'] = get_vip_type_desc_by_value(vip_type)
+				
 				if db_unique_mark is None or db_unique_mark == '':
-					db.update_unique_mark(account,unique_mark)
+					result_msg['dateline'] = db.update_unique_mark(account,unique_mark)
 				elif unique_mark == db_unique_mark:
 					if vip_type != VipType.forever.value:
 						if date_util.isVipValid(register_time,vip_type):
@@ -101,8 +110,13 @@ def check_user_info(account,unique_mark,is_count_search_times):
 							elif is_count_search_times:
 								use_times = use_times - 1
 								db.update_use_times(account,use_times)
+								result_msg['dateline'] = date_util.getDateline(register_time,vip_type)
+								result_msg['balance_times']  = use_times + '次'
 						else:
 							result_msg = get_err_msg(5)
+					else:
+						result_msg['dateline'] = '永久'
+						result_msg['balance_times']  = '无限次'
 				else:
 					result_msg = get_err_msg(3)
 			else:

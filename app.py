@@ -114,8 +114,8 @@ def adminDelete():
 		return json.dumps(get_err_msg(6))
 
 if __name__ == '__main__':
-	# app.debug = True
-	# app.run(host='0.0.0.0')
-    app.run()
+	app.debug = True
+	app.run(host='0.0.0.0')
+    # app.run()
  
 	

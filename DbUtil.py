@@ -52,10 +52,12 @@ class DbUtil:
 		
 	# 当用户绑定设备时，设置激活时间
 	def update_unique_mark(self,account,unique_mark):
+		time = datetime.now()
 		conn = self.open_conn()
 		cursor = self.open_cursor(conn)
-		cursor.execute("UPDATE user SET unique_mark = ?,register_time = ? WHERE account = ?",(unique_mark,datetime.now(),account))
+		cursor.execute("UPDATE user SET unique_mark = ?,register_time = ? WHERE account = ?",(unique_mark,time,account))
 		self.close_db(conn,cursor)
+		return str(time)
 	
 	# 使用分裂标题接口时，使用次数－1
 	def update_use_times(self,account,use_times):
