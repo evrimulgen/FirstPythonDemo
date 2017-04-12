@@ -7,8 +7,10 @@ from UserUtil import *
 import json
 import SearchLogic
 
-app = Flask(__name__)
+def create_app():
+  	return Flask(__name__)
 
+app = create_app()
 ######################## 客户端后台服务模块 ########################
 
 # 判断登录是否有效
@@ -111,8 +113,9 @@ def adminDelete():
 	else:
 		return json.dumps(get_err_msg(6))
 
-
 if __name__ == '__main__':
-	app.debug = True
-	app.run(host='0.0.0.0') 
+	# app.debug = True
+	# app.run(host='0.0.0.0')
+    app.run()
+ 
 	

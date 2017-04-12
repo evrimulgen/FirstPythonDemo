@@ -10,7 +10,7 @@ from requests.utils import quote
 s = requests.Session()
 headers = {"user-agent":r"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.87 Safari/537.36"}
 # 去掉html标签，去掉指定名词
-rule1 = re.compile('<[^>]+>|^[A-Za-z]+|正品|专营店|旗舰店|专卖店')
+rule1 = re.compile('<[^>]+>|^[A-Za-z]+|正品|专营店|旗舰店|专卖店|特价')
 page_size = 60
 results = []
 brand_list = []
@@ -68,5 +68,5 @@ def get_title_list_by_total_page(key_word,total_page):
 def get_processed_title(brand_list,title_list):
 	for index, value in enumerate(title_list):	
 		for val in brand_list:
-			title_list[index] = title_list[index].replace('\\','').replace('/','').replace(val,'')
+			title_list[index] = title_list[index].replace('\\','').replace('/','').replace(val,'').strip()
 	return title_list
