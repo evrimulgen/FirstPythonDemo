@@ -57,7 +57,7 @@ class DbUtil:
 		cursor = self.open_cursor(conn)
 		cursor.execute("UPDATE user SET unique_mark = ?,register_time = ? WHERE account = ?",(unique_mark,time,account))
 		self.close_db(conn,cursor)
-		return time
+		return str(time)
 	
 	# 使用分裂标题接口时，使用次数－1
 	def update_use_times(self,account,use_times):
