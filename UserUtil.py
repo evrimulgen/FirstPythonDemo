@@ -101,7 +101,7 @@ def check_user_info(account,unique_mark,is_count_search_times):
 				result_msg['vip_type'] = get_vip_type_desc_by_value(vip_type)
 				
 				if db_unique_mark is None or db_unique_mark == '':
-					result_msg['dateline'] = db.update_unique_mark(account,unique_mark)
+					result_msg['dateline'] =  date_util.getDateline(db.update_unique_mark(account,unique_mark),vip_type)
 				elif unique_mark == db_unique_mark:
 					if vip_type != VipType.forever.value:
 						if date_util.isVipValid(register_time,vip_type):
