@@ -101,8 +101,8 @@
                 return;
               }
               var row_data = [];
-              row_data.push(user_infos[row]);
-              var balanceTimes_oldValue = row_data[balance_times_column_index];
+              row_data = user_infos[row];
+              var balanceTimes_oldValue = row_data[3];
               var vipType_oldValue = row_data[vip_type_index];
               var user_name_oldValue = row_data[user_name_index]
 
@@ -149,6 +149,7 @@
                 success: function(response) {
                   if(response["status"] == true){
                     that.parent().remove();
+                    user_infos.splice(row,1)
                     alert("成功删除用户");
                   }else{
                     alert("删除用户失败");
@@ -187,7 +188,9 @@
                 dataType: 'json', // 注意：这里是指希望服务端返回json格式的数据
                 success: function(response) {
                   if(response["status"] == true){
-                    insertOneRaw(response['list'],true);
+                  	one_row = response['list']
+                    insertOneRaw(one_row,true);
+                    user_infos.splice(0,0,one_row)
                     alert("成功添加新用户")
                   }else{
                     alert("添加新用户失败")
