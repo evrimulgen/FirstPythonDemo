@@ -82,7 +82,7 @@ def adminLogin():
 @app.route('/admin_add', methods=['POST'])
 def adminAdd():
 	result = request.get_json()
-	rows = add_new_user(result["account"],result["vip_type"])
+	rows = add_new_user(result["account"],result["user_name"],result["vip_type"])
 	if rows == 1:
 		# 待优化 取最后一条数据
 		result = get_ok_msg()
@@ -114,8 +114,6 @@ def adminDelete():
 		return json.dumps(get_err_msg(6))
 
 if __name__ == '__main__':
-	# app.debug = True
+	app.debug = True
 	# app.run(host='0.0.0.0')
-    app.run()
- 
-	
+	app.run()

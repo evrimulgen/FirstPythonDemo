@@ -6,10 +6,10 @@ from DbUtil import *
 
 import sqlite3
 import traceback
-import hashlib
+# import hashlib
 from DateUtil import *
 
-VIP_USE_TIMES = (3,10,21,43,0)
+VIP_USE_TIMES = (5,80,600,1300,0)
 # 月会员3次
 # 季度10次
 # 半年会员21次
@@ -31,15 +31,15 @@ def is_use_forever(vip_type):
 # 		return 0
 
 def get_use_times_by_value(vip_type):
-	if vip_type < VipType.month.value or vip_type > VipType.forever.value:
+	if vip_type < VipType.trial.value or vip_type > VipType.forever.value:
 		return 0
 	return VIP_USE_TIMES[vip_type]
 
 def get_vip_type_desc_by_value(vip_type):
-	if vip_type == VipType.month.value:
+	if vip_type == VipType.trial.value:
+		return "试用会员(2天)"
+	elif vip_type == VipType.month.value:
 		return '月费会员'
-	elif vip_type == VipType.quarter.value:
-		return '季度会员'
 	elif vip_type == VipType.half_year.value:
 		return '半年会员'
 	elif vip_type == VipType.year.value:
@@ -116,7 +116,7 @@ def check_user_info(account,unique_mark,is_count_search_times):
 							result_msg = get_err_msg(5)
 					else:
 						result_msg['dateline'] = '永久'
-						result_msg['balance_times']  = '无限次'
+						result_msg['balance_times'] = '无限次'
 				else:
 					result_msg = get_err_msg(3)
 			else:
@@ -133,8 +133,8 @@ def get_all_user_info():
 def get_last_user_info():
 	return db.get_last_one()
 
-def add_new_user(account,vip_type):
-	rows = db.insert(account,vip_type)
+def add_new_user(account,user_name,vip_type):
+	rows = db.insert(account,user_name,vip_type)
 	return rows
 
 def delete_one_user(account):

@@ -11,21 +11,19 @@ from VipType import *
 class DateUtil():
 	def isVipValid(self,time,vip_type):
 		start_time = parse(time)
-		end_time = start_time
-		months_num = 1
-		if vip_type == VipType.month.value:
-			months_num = 1
-		elif vip_type == VipType.quarter.value:
-			months_num = 3
+		if vip_type == VipType.trial.value:
+			end_time = start_time + relativedelta(days=+2)
+		elif vip_type == VipType.month.value:
+			end_time = start_time + relativedelta(months=+1)
 		elif vip_type == VipType.half_year.value:
-			months_num = 6
+			end_time = start_time + relativedelta(months=+6)
 		elif vip_type == VipType.year.value:
-			months_num = 12
+			end_time = start_time + relativedelta(months=+12)
 		elif vip_type == VipType.forever.value:
 			return True
 		else:
 			return False
-		end_time = start_time+relativedelta(months=+months_num)
+
 		return (end_time > datetime.now())
 
 	def getDateline(self,time,vip_type):
@@ -33,21 +31,18 @@ class DateUtil():
 		return str(self.__getDateline(start_time,vip_type))
 
 	def __getDateline(self,time,vip_type):
-		months_num = 1
+		if vip_type == VipType.trial.value:
+			return str(time + relativedelta(days=+2))
 		if vip_type == VipType.month.value:
-			months_num = 1
-		elif vip_type == VipType.quarter.value:
-			months_num = 3
+			return str(time + relativedelta(months=+1))
 		elif vip_type == VipType.half_year.value:
-			months_num = 6
+			return str(time + relativedelta(months=+6))
 		elif vip_type == VipType.year.value:
-			months_num = 12
+			return str(time + relativedelta(months=+12))
 		elif vip_type == VipType.forever.value:
 			return '永久'
 		else:
 			return '无效'
-		return str(time+relativedelta(months=+months_num))
-
 
 
 

@@ -28,7 +28,7 @@ class DbUtil:
 						register_time varchar(200),\
 						balance_times INT,\
 						vip_type INT,\
-						status bool,\
+						user_name varchar(200),\
 						PRIMARY KEY (account)) ')
 		return cursor
 	
@@ -67,7 +67,7 @@ class DbUtil:
 		self.close_db(conn,cursor)
 
 	# 新增用户
-	def insert(self,account,vip_type_str):
+	def insert(self,account,user_name,vip_type_str):
 		vip_type = int(vip_type_str)
 		rows = 0
 		use_times = UserUtil.get_use_times_by_value(vip_type)
@@ -76,9 +76,9 @@ class DbUtil:
 			cursor = self.open_cursor(conn)
 			# 继续执行一条SQL语句，插入一条记录:
 			cursor.execute("insert into user \
-				(account,unique_mark,register_time,balance_times,vip_type,status)\
+				(account,unique_mark,register_time,balance_times,vip_type,user_name)\
 				values (?,?,?,?,?,?)",\
-				(account,'','',use_times,vip_type,True))
+				(account,'','',use_times,vip_type,user_name))
 			rows = conn.total_changes
 			self.close_db(conn,cursor)
 		except sqlite3.IntegrityError as e:

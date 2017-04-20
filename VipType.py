@@ -5,8 +5,8 @@ from enum import Enum,unique
 
 @unique
 class VipType(Enum):
-	month = 0
-	quarter = 1
+	trial = 0
+	month = 1
 	half_year = 2
 	year = 3
 	forever = 4
