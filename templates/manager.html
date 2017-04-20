@@ -100,9 +100,8 @@
                 alert("用户名不能为空");
                 return;
               }
-              var row_data = new Array();
-              row_data = user_infos[row];
-              console.log(row_data);
+              var row_data = [];
+              row_data.push(user_infos[row]);
               var balanceTimes_oldValue = row_data[balance_times_column_index];
               var vipType_oldValue = row_data[vip_type_index];
               var user_name_oldValue = row_data[user_name_index]
