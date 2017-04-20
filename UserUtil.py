@@ -1,15 +1,13 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from VipType import * 
-from DbUtil import *
-
-import sqlite3
 import traceback
+
 # import hashlib
 from DateUtil import *
+from DbUtil import *
 
-VIP_USE_TIMES = (5,80,600,1300,0)
+VIP_USE_TIMES = (5, 80, 600, 1300, 0)
 # 月会员3次
 # 季度10次
 # 半年会员21次
@@ -18,11 +16,13 @@ VIP_USE_TIMES = (5,80,600,1300,0)
 db = DbUtil()
 date_util = DateUtil()
 
+
 def is_use_forever(vip_type):
 	if vip_type == VipType.forever:
 		return True
 	else:
 		return False
+
 
 # def get_use_times(vip_type):
 # 	if vip_type in VipType:
@@ -34,6 +34,7 @@ def get_use_times_by_value(vip_type):
 	if vip_type < VipType.trial.value or vip_type > VipType.forever.value:
 		return 0
 	return VIP_USE_TIMES[vip_type]
+
 
 def get_vip_type_desc_by_value(vip_type):
 	if vip_type == VipType.trial.value:
@@ -49,17 +50,19 @@ def get_vip_type_desc_by_value(vip_type):
 	else:
 		return '异常会员'
 
+
 def get_ok_msg():
-	result_ok = {'status':True}
+	result_ok = {'status': True}
 	return result_ok
 
+
 def get_err_msg(code):
-	result_err = {'status':False}
+	result_err = {'status': False}
 	result_err['err_code'] = code
 	err_msg = ''
 	if code == 0:
 		err_msg = '用户名不能为空'
-	elif code == 1:#设备ID为空
+	elif code == 1:  # 设备ID为空
 		err_msg = '设备异常'
 	elif code == 2:
 		err_msg = '用户名不存在'
@@ -76,8 +79,9 @@ def get_err_msg(code):
 	result_err['err_msg'] = err_msg
 	return result_err
 
+
 # 校验用户信息
-def check_user_info(account,unique_mark,is_count_search_times):
+def check_user_info(account, unique_mark, is_count_search_times):
 	result_msg = get_ok_msg()
 	if account is None or account == '':
 		result_msg = get_err_msg(0)
@@ -87,31 +91,32 @@ def check_user_info(account,unique_mark,is_count_search_times):
 		try:
 			results = db.select_user_info(account)
 			if results != None:
-				db_unique_mark = results[1] 
+				db_unique_mark = results[1]
 				register_time = results[2]
 				use_times = results[3]
 				vip_type = results[4]
 
 				if register_time is not None and register_time != '':
-					result_msg['dateline'] = date_util.getDateline(register_time,vip_type)
+					result_msg['dateline'] = date_util.getDateline(register_time, vip_type)
 				if vip_type == VipType.forever.value:
 					result_msg['balance_times'] = '无限次'
 				else:
 					result_msg['balance_times'] = str(use_times) + '次'
 				result_msg['vip_type'] = get_vip_type_desc_by_value(vip_type)
-				
+
 				if db_unique_mark is None or db_unique_mark == '':
-					result_msg['dateline'] =  date_util.getDateline(db.update_unique_mark(account,unique_mark),vip_type)
+					result_msg['dateline'] = date_util.getDateline(db.update_unique_mark(account, unique_mark),
+					                                               vip_type)
 				elif unique_mark == db_unique_mark:
 					if vip_type != VipType.forever.value:
-						if date_util.isVipValid(register_time,vip_type):
+						if date_util.isVipValid(register_time, vip_type):
 							if use_times <= 0:
 								result_msg = get_err_msg(4)
 							elif is_count_search_times:
 								use_times = use_times - 1
-								db.update_use_times(account,use_times)
-								result_msg['dateline'] = date_util.getDateline(register_time,vip_type)
-								result_msg['balance_times']  = str(use_times) + '次'
+								db.update_use_times(account, use_times)
+								result_msg['dateline'] = date_util.getDateline(register_time, vip_type)
+								result_msg['balance_times'] = str(use_times) + '次'
 						else:
 							result_msg = get_err_msg(5)
 					else:
@@ -123,26 +128,31 @@ def check_user_info(account,unique_mark,is_count_search_times):
 				result_msg = get_err_msg(2)
 		except sqlite3.Error as e:
 			print(str(e))
-			print ('traceback.print_exc():',traceback.print_exc())
+			print('traceback.print_exc():', traceback.print_exc())
 			result_msg = get_err_msg(-1)
 	return result_msg
-	
+
+
 def get_all_user_info():
 	return db.get_all()
+
 
 def get_last_user_info():
 	return db.get_last_one()
 
-def add_new_user(account,user_name,vip_type):
-	rows = db.insert(account,user_name,vip_type)
+
+def add_new_user(account, user_name, vip_type):
+	rows = db.insert(account, user_name, vip_type)
 	return rows
+
 
 def delete_one_user(account):
 	rows = db.delete_one_user(account)
 	return rows
 
-def update_one_user(account,use_times,vip_type):
-	rows = db.update_one_user(account,use_times,vip_type)
+
+def update_one_user(account, user_name, use_times, vip_type):
+	rows = db.update_one_user(account, user_name, use_times, vip_type)
 	return rows
 
 # def get_md5(name,phone_num):

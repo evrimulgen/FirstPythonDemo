@@ -1,18 +1,19 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
-  <head>
-      <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-      <title>超级管理员管理</title>
-      <link href="{{ url_for('static', filename='css/fixedheader.css') }}" rel="stylesheet" type="text/css" />
-      <script type="text/javascript" src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
-      <script src="{{ url_for('static', filename='js/fixedheader.js') }}" type="text/javascript"></script>    
-      <script src="{{ url_for('static', filename='js/stringformat.js') }}" type="text/javascript"></script>    
-      <script type="text/javascript">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+	<title>超级管理员管理</title>
+	<link href="{{ url_for('static', filename='css/fixedheader.css') }}" rel="stylesheet" type="text/css"/>
+	<script type="text/javascript" src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+	<script src="{{ url_for('static', filename='js/fixedheader.js') }}" type="text/javascript"></script>
+	<script src="{{ url_for('static', filename='js/stringformat.js') }}" type="text/javascript"></script>
+	<script type="text/javascript">
         var user_infos = {{user_infos|tojson}};
         var vip_type_des = ["试用会员","月费会员","半年会员","年费会员","永久会员"];
         var account_column_index = 0;
         var balance_times_column_index = 3;
         var vip_type_index = 4;
+        var user_name_index = 5;
         var modify_index = 6;
         var delete_index = 7;
 
@@ -39,6 +40,9 @@
                 var td = '<td>'+
                             select +
                          '</td>';
+                tr = tr + td;
+              }else if(j == balance_times_column_index || j == user_name_index){
+                var td = '<td contentEditable = "true" >'+user_info[j]+'</td>';
                 tr = tr + td;
               }else{
                 var td = '<td>'+user_info[j]+'</td>';
@@ -80,42 +84,38 @@
 
           //编辑用户信息
           $("tbody").on('click','td',function(event){
-
             var col = $(this).parent().children().index($(this));
             var row = $(this).parent().parent().children().index($(this).parent());
-            if (col == balance_times_column_index){
-              var isContentEditable = (this).contentEditable;
-              console.log(isContentEditable)
-              if (isContentEditable=='true'){
-                (this).contentEditable = false;
-                (this).style.backgroundColor= "white";
-                (this).style.color= "black";
-              }else{
-                (this).contentEditable = true;
-                (this).style.backgroundColor= "red";
-                (this).style.color= "black";
-              }
-            }else if(col == modify_index){
+            if(col == modify_index){
               var balanceTimes_newValue = $(this).parent().children().eq(balance_times_column_index).text().trim();
               var vipType_newValue = $(this).parent().children().eq(vip_type_index).children().val().trim();
+              var user_name_newValue = $(this).parent().children().eq(user_name_index).text().trim();
 
               var rule = /^\d+$/;//正整数正则表达式
               if(rule.test(balanceTimes_newValue) == false){
-                alert("请输入整数");
+                alert("剩余次数 请输入整数");
+                return;
+              }
+              if(user_name_newValue == ''){
+                alert("用户名不能为空");
                 return;
               }
               var row_data = new Array();
               row_data = user_infos[row];
+              console.log(row_data);
               var balanceTimes_oldValue = row_data[balance_times_column_index];
               var vipType_oldValue = row_data[vip_type_index];
-              if(balanceTimes_oldValue == balanceTimes_newValue && vipType_oldValue == vipType_newValue){
+              var user_name_oldValue = row_data[user_name_index]
+
+              if(balanceTimes_oldValue == balanceTimes_newValue && vipType_oldValue == vipType_newValue &&user_name_oldValue == user_name_newValue){
                 alert("更新数据成功");
                 return;
               }
               var JSONstring={
                 "account":user_infos[row][0],
                 "blance_times":parseInt(balanceTimes_newValue),
-                "vip_type":parseInt(vipType_newValue)
+                "vip_type":parseInt(vipType_newValue),
+                "user_name":user_name_newValue
               }
               $.ajax({
                 type: 'POST',
@@ -201,59 +201,63 @@
               });
           });
         });
-    </script>
-  </head>
-  <body style="margin:20px;">
-    <div>
-      <!-- <form action={{ url_for('adminAdd') }} method="post" role="form"> -->
-        <div style="margin-top:20px;margin-bottom:20px;"><button type="submit">添加用户</button></div>
-        <div style="margin-top:20px;">
-          <span>手机号&nbsp;&nbsp;&nbsp;</span>
-          <input style="width:250px;height:30px;" type="text"
-               id="account" name="account"placeholder="请输入手机号">
-          <br/>
-          <span>用户名&nbsp;&nbsp;&nbsp;</span>
-          <input style="width:250px;height:30px;" type="text"
-               id="user_name" name="user_name"placeholder="请输入用户名">
-          <br/>
-        </div>
-        <div style="margin-top:20px;">
-          <span>Vip类型&nbsp;&nbsp;</span> 
-          <select id="vip_type">
-            <option value="0">试用会员</option>
-            <option value="1">月费会员</option>
-            <option value="2">半年会员</option>
-            <option value="3">年费会员</option>
-            <option value="4">永久会员</option>
-          </select>
-        </div>
-      <!-- </form> -->
-    </div>
 
-    <p style = "margin-top:20px;margin-bottom:20px;"> 用户列表</p>
-      <table class="blue">
-        <thead>
-          <tr>
-            <th>帐号</th>
-            <th>绑定的设备</th>
-            <th>注册时间</th>
-            <th>剩余次数</th>
-            <th>Vip类型</th>
-            <th>用户名</th>
-            <th>编辑</th>
-            <th>删除</th>
-          </tr>
-        </thead>
-        <tbody>
-          <!-- {% for user_info in user_infos %}
-            <tr>
-              {% for item in user_info %}
-                <td contenteditable = false>{{ item }}</td>
-              {% endfor %} 
-                <td contenteditable = false>修改</td>
-            </tr>
-          {% endfor %} --> 
-        </tbody> 
-        </table>
-  </body>
+
+	</script>
+</head>
+<body style="margin:20px;">
+<div>
+	<!-- <form action={{ url_for('adminAdd') }} method="post" role="form"> -->
+	<div style="margin-top:20px;margin-bottom:20px;">
+		<button type="submit">添加用户</button>
+	</div>
+	<div style="margin-top:20px;">
+		<span>手机号&nbsp;&nbsp;&nbsp;</span>
+		<input style="width:250px;height:30px;" type="text"
+			   id="account" name="account" placeholder="请输入手机号">
+		<br/>
+		<span>用户名&nbsp;&nbsp;&nbsp;</span>
+		<input style="width:250px;height:30px;" type="text"
+			   id="user_name" name="user_name" placeholder="请输入用户名">
+		<br/>
+	</div>
+	<div style="margin-top:20px;">
+		<span>Vip类型&nbsp;&nbsp;</span>
+		<select id="vip_type">
+			<option value="0">试用会员</option>
+			<option value="1">月费会员</option>
+			<option value="2">半年会员</option>
+			<option value="3">年费会员</option>
+			<option value="4">永久会员</option>
+		</select>
+	</div>
+	<!-- </form> -->
+</div>
+
+<p style="margin-top:20px;margin-bottom:20px;"> 用户列表</p>
+<table class="blue">
+	<thead>
+	<tr>
+		<th>帐号</th>
+		<th>绑定的设备</th>
+		<th>注册时间</th>
+		<th>剩余次数</th>
+		<th>Vip类型</th>
+		<th>用户名</th>
+		<th>编辑</th>
+		<th>删除</th>
+	</tr>
+	</thead>
+	<tbody>
+	<!-- {% for user_info in user_infos %}
+	  <tr>
+		{% for item in user_info %}
+		  <td contenteditable = false>{{ item }}</td>
+		{% endfor %}
+		  <td contenteditable = false>修改</td>
+	  </tr>
+	{% endfor %} -->
+	</tbody>
+</table>
+</body>
 </html>
