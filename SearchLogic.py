@@ -5,6 +5,7 @@ import re
 
 import requests
 from requests.utils import quote
+from threading import Thread
 
 s = requests.Session()
 headers = {
@@ -63,8 +64,14 @@ def get_title_list_by_total_page(key_word, total_page):
 		total_page_count = int(total_page)
 		if total_page_count < 1:
 			total_page_count = 1
+	thread_list = []
 	for index in range(0, total_page_count):
-		title_list = title_list + get_title_list_by_page_index(key_word, index + 1)
+		__thread = TitlesThread(target=get_title_list_by_page_index, args=(key_word, index + 1))
+		__thread.start()
+		thread_list.append(__thread)
+
+	for thread_item in thread_list:
+		title_list = title_list + thread_item.join()
 	return title_list
 
 
@@ -74,3 +81,17 @@ def get_processed_title(brand_list, title_list):
 		for val in brand_list:
 			title_list[index] = title_list[index].replace('\\', '').replace('/', '').replace(val, '').strip()
 	return title_list
+
+
+class TitlesThread(Thread):
+	def __init__(self, group=None, target=None, name=None, args=(), kwargs=None, *, daemon=None):
+		Thread.__init__(self, group, target, name, args, kwargs, daemon=daemon)
+		self._result = None
+
+	def run(self):
+		if self._target is not None:
+			self._result = self._target(*self._args, **self._kwargs)
+
+	def join(self, timeout=None):
+		Thread.join(self)
+		return self._result
