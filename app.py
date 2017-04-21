@@ -4,14 +4,17 @@
 import json
 
 from flask import Flask, request, render_template, make_response
+from flask_compress import Compress
 
 import SearchLogic
 from UserUtil import *
 
+compress = Compress()
 
 def create_app():
-	return Flask(__name__)
-
+	app = Flask(__name__)
+	compress.init_app(app)
+	return app
 
 app = create_app()
 
