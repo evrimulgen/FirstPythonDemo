@@ -13,8 +13,6 @@ headers = {
 # 去掉html标签，去掉指定名词
 rule1 = re.compile('<[^>]+>|^[A-Za-z]+|正品|专营店|旗舰店|专卖店|特价')
 page_size = 60
-results = []
-brand_list = []
 
 
 # 通过 商品关键字 获取品牌列表
@@ -57,11 +55,11 @@ def get_title_list_by_page_index(key_word, page_index):
 	return title_list
 
 
-def get_title_list_by_total_page(key_word, total_page):
+def get_title_list_by_total_page(key_word, page_count):
 	title_list = []
 	total_page_count = 1
-	if total_page is not None and total_page != '':
-		total_page_count = int(total_page)
+	if page_count is not None and page_count != '':
+		total_page_count = int(page_count)
 		if total_page_count < 1:
 			total_page_count = 1
 	thread_list = []
@@ -76,10 +74,10 @@ def get_title_list_by_total_page(key_word, total_page):
 
 
 # 获取 去 品牌名 的标题
-def get_processed_title(key_word, page_size):
+def get_processed_title(key_word, page_count):
 	_thread_brand_list = TitlesThread(target=get_brand_list, args=(key_word,))
 	_thread_brand_list.start()
-	title_list = get_title_list_by_total_page(key_word, page_size)
+	title_list = get_title_list_by_total_page(key_word, page_count)
 	brand_list = _thread_brand_list.join()
 	for index, value in enumerate(title_list):
 		for val in brand_list:
