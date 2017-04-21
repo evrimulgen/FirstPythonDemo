@@ -2,10 +2,10 @@
 # -*- coding: utf-8 -*-
 
 import re
+from threading import Thread
 
 import requests
 from requests.utils import quote
-from threading import Thread
 
 s = requests.Session()
 headers = {
@@ -76,7 +76,11 @@ def get_title_list_by_total_page(key_word, total_page):
 
 
 # 获取 去 品牌名 的标题
-def get_processed_title(brand_list, title_list):
+def get_processed_title(key_word, page_size):
+	_thread_brand_list = TitlesThread(target=get_brand_list, args=(key_word,))
+	_thread_brand_list.start()
+	title_list = get_title_list_by_total_page(key_word, page_size)
+	brand_list = _thread_brand_list.join()
 	for index, value in enumerate(title_list):
 		for val in brand_list:
 			title_list[index] = title_list[index].replace('\\', '').replace('/', '').replace(val, '').strip()

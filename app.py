@@ -11,10 +11,12 @@ from UserUtil import *
 
 compress = Compress()
 
+
 def create_app():
 	app = Flask(__name__)
 	compress.init_app(app)
 	return app
+
 
 app = create_app()
 
@@ -55,8 +57,7 @@ def search():
 		return json.dumps(result)
 	if key_word is None or key_word == '':
 		return json.dumps(())
-	brand_list = SearchLogic.get_brand_list(key_word)
-	results = SearchLogic.get_processed_title(brand_list, SearchLogic.get_title_list_by_total_page(key_word, number))
+	results = SearchLogic.get_processed_title(key_word, number)
 	result['list'] = results
 	return json.dumps(result)
 
